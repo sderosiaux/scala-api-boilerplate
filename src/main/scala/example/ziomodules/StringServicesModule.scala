@@ -1,11 +1,10 @@
 package example.ziomodules
 
+import example.model.Joke
 import io.circe.Decoder
 import org.http4s.client.Client
-import zio.{ RIO, Task, UIO, ZIO }
 import org.http4s.implicits._
-import org.http4s.circe._
-import org.http4s.EntityDecoder
+import zio.{ RIO, Task, UIO, ZIO }
 import zio.interop.catz._
 
 trait StringServicesModule extends Serializable {
@@ -21,15 +20,18 @@ object StringServicesModule {
 }
 
 trait RemoteStringServicesModule extends StringServicesModule {
-  val client: Client[Task]
+  import io.circe.generic.semiauto._
+  import org.http4s.circe.CirceEntityDecoder._
 
-  // we need to summon a Sync[Task] (hence a MonadError[?, Throwable])
-  implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]): EntityDecoder[Task, A] = jsonOf[Task, A]
+  implicit val jokeDecoder: Decoder[Joke] = deriveDecoder[Joke]
+
+  val client: Client[Task]
 
   override val simple = new StringServicesModule.StringProvider[Any] {
     override def get: UIO[String] = // R=Any
       client
-        .expect[String](uri"https://icanhazdadjoke.com/")
+        .expect[Joke](uri"https://icanhazdadjoke.com/")
+        .map(_.joke)
         .catchAll(h => ZIO.succeed(h.toString))
   }
 }

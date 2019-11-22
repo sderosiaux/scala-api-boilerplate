@@ -1,26 +1,21 @@
 package example
 
-import cats.effect._
-import fs2.Stream.Compiler._
 import cats.effect.ExitCode
 import cats.implicits._
-import example.route.{ ApiRoutes, RawHttp4sRoute }
+import example.route.{ ApiRoutes, ExternalApiRoutes, RawHttp4sRoute }
 import example.ziomodules.{ RemoteStringServicesModule, StringServicesModule }
+import fs2.Stream.Compiler._
+import org.http4s.HttpApp
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
-import org.http4s.{ HttpApp, HttpRoutes }
-import tapir.Endpoint
-import tapir.docs.openapi._
-import tapir.openapi.circe.yaml._
-import tapir.openapi.{ Contact, Info }
-import tapir.swagger.http4s.SwaggerHttp4s
 import zio.clock.Clock
 import zio.console._
 import zio.interop.catz._
 import zio.{ App, RIO, ZIO, _ }
+
 import scala.concurrent.ExecutionContext.global
 
 object HttpApp extends App {
@@ -35,7 +30,8 @@ object HttpApp extends App {
         val x = server.provideSome[ZEnv] { currentEnv =>
           new Clock with RemoteStringServicesModule {
             override val clock: Clock.Service[Any] = currentEnv.clock
-            override val client: Client[Task] = cc
+            override val client: Client[Task] =
+              org.http4s.client.middleware.Logger(logHeaders = true, logBody = false)(cc)
           }
         }
         x
@@ -52,13 +48,15 @@ object HttpApp extends App {
 
   private def runHttp(conf: ApplicationConf): ZIO[AppEnvironment, Throwable, Unit] = {
     val apiRoutes = new ApiRoutes[AppEnvironment]()
-    val openApiRoutes = OpenApi.route[AppEnvironment](apiRoutes.endpoints)
+    val externalApi = new ExternalApiRoutes[AppEnvironment]()
+    val openApiRoutes = OpenApi.route[AppEnvironment](apiRoutes.endpoints ++ Seq(externalApi.jokeEndpoint))
 
     ZIO.runtime[AppEnvironment].flatMap { implicit rts =>
       val rawRoute = RawHttp4sRoute.buildRaw[RIO[AppEnvironment, *]]()
       val allTapirRoutes = apiRoutes.getRoutes.foldK
 
-      val httpApp: HttpApp[RIO[AppEnvironment, *]] = (rawRoute <+> allTapirRoutes <+> openApiRoutes).orNotFound
+      val httpApp: HttpApp[RIO[AppEnvironment, *]] =
+        (rawRoute <+> allTapirRoutes <+> openApiRoutes <+> externalApi.route).orNotFound
       val httpAppExtended = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
 
       BlazeServerBuilder[RIO[AppEnvironment, *]]
