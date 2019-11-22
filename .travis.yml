@@ -33,7 +33,6 @@ jobs:
       name: "Code style check (fixed with `sbt Test/compile`)"
     - script: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
       name: "Build code style check (fixed with `sbt scalafmtSbt`)"
-
     - stage: test
       script: sbt -Dfile.encoding=UTF8 -J-XX:ReservedCodeCacheSize=256M ++$TRAVIS_SCALA_VERSION clean test
       name: "Run all tests"
