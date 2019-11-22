@@ -1,3 +1,5 @@
+# scala-tapir-http4s-zio [![Build Status](https://travis-ci.org/sderosiaux/scala-tapir-http4s-zio.svg?branch=master)](https://travis-ci.org/sderosiaux/scala-tapir-http4s-zio)
+
 # What
 
 The API is using `.env` to read and set environment variables (dev mode).
