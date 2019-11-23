@@ -12,6 +12,7 @@ import eu.timepit.refined.types.string.NonEmptyString
 final case class Port(port: PosInt)
 
 object Port {
+
   implicit val decoder: ConfigDecoder[String, Port] =
     ConfigDecoder[String, PosInt].mapOption("Port")(Port(_).some)
 }

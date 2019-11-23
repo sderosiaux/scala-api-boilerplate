@@ -4,7 +4,7 @@ val gitOwner = "sderosiaux"
 val gitRepo = "repo"
 
 scalaVersion     := "2.13.1"
-version          := "0.1.0-SNAPSHOT"
+version          := "0.1.0"
 organization     := "com.example"
 organizationName := "example"
 startYear        := Some(2019)
@@ -12,10 +12,10 @@ licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 homepage := Some(url(s"https://github.com/$gitOwner/$gitRepo"))
 scmInfo  := Some(ScmInfo(url(s"https://github.com/$gitOwner/$gitRepo"), s"git@github.com:$gitOwner/$gitRepo.git"))
 developers += Developer(
-  "contributors",
-  "Contributors",
-  s"https://github.com/$gitOwner/$gitRepo/issues",
-  url(s"https://github.com/$gitOwner/$gitRepo/graphs/contributors")
+  "sderosiaux",
+  "Stéphane Derosiaux",
+  s"stephane@ixonad.com",
+  url(s"https://sderosiaux.com")
 )
 
 resolvers += Resolver.sonatypeRepo("releases")
@@ -35,6 +35,7 @@ lazy val root = (project in file("."))
       scalaTest                             % Test,
       "dev.zio" %% "zio"                    % ZioVersion,
       "dev.zio" %% "zio-interop-cats"       % ZioCatsVersion,
+      //"dev.zio" %% "zio-logging"            % ZioVersion,
       "org.http4s" %% "http4s-core"         % Http4sVersion,
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
       "org.http4s" %% "http4s-blaze-client" % Http4sVersion,

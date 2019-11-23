@@ -5,6 +5,7 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
 object RawHttp4sRoute {
+
   def buildRaw[F[_]: Sync](): HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl._

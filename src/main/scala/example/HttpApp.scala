@@ -15,17 +15,19 @@ import zio.clock.Clock
 import zio.console._
 import zio.interop.catz._
 import zio.{ App, RIO, ZIO, _ }
-
+import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.global
 
 object HttpApp extends App {
   type AppEnvironment = Clock with StringServicesModule // with UserRepository with MyLogger
 
-  override def run(args: List[String]) = {
-    val prog: ZIO[ZEnv, Throwable, Unit] = for {
+  override def run(args: List[String]) =
+    (for {
       conf <- ZIO.effect(ApplicationConf.build().orThrow())
       _ <- putStrLn(conf.toString)
       server: ZIO[AppEnvironment, Throwable, Unit] = runHttp(conf)
+      blockingEC <- blocking.blockingExecutor.map(_.asEC)
+      //client <- makeClient(blockingEC)
       prog <- runClient[ZEnv, Unit] { cc =>
         val x = server.provideSome[ZEnv] { currentEnv =>
           new Clock with RemoteStringServicesModule {
@@ -36,15 +38,17 @@ object HttpApp extends App {
         }
         x
       }
-    } yield prog
-
-    prog.foldM(h => putStrLn(h.toString).as(1), _ => ZIO.succeed(0))
-  }
+    } yield prog).foldM(h => putStrLn(h.toString).as(1), _ => ZIO.succeed(0))
 
   private def runClient[R, A](f: Client[Task] => ZIO[R, Throwable, A]): ZIO[R, Throwable, A] =
     ZIO.runtime[R].flatMap { implicit rts =>
       BlazeClientBuilder[RIO[Any, *]](global).resource.toManagedZIO.use(f)
     }
+
+  private def makeClient(ec: ExecutionContext)(implicit r: Runtime[Any]): ZManaged[Any, Throwable, Client[Task]] = {
+    import zio.interop.catz._
+    BlazeClientBuilder[Task](ec).resource.toManagedZIO
+  }
 
   private def runHttp(conf: ApplicationConf): ZIO[AppEnvironment, Throwable, Unit] = {
     val apiRoutes = new ApiRoutes[AppEnvironment]()
@@ -57,7 +61,8 @@ object HttpApp extends App {
 
       val httpApp: HttpApp[RIO[AppEnvironment, *]] =
         (rawRoute <+> allTapirRoutes <+> openApiRoutes <+> externalApi.route).orNotFound
-      val httpAppExtended = Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
+      val httpAppExtended =
+        Logger.httpApp(logHeaders = true, logBody = true)(httpApp)
 
       BlazeServerBuilder[RIO[AppEnvironment, *]]
         .bindHttp(conf.port.port.value, conf.server.value)

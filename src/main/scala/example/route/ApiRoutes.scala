@@ -9,6 +9,7 @@ import zio.interop.catz._
 import zio.{ RIO, Task, ZIO }
 
 class ApiRoutes[R]() {
+
   val getRoutes: List[HttpRoutes[RIO[R, *]]] = {
     implicit val customServerOptions: Http4sServerOptions[RIO[R, *]] = Http4sServerOptions
       .default[RIO[R, *]]

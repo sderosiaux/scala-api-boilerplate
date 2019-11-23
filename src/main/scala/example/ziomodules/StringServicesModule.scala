@@ -12,6 +12,7 @@ trait StringServicesModule extends Serializable {
 }
 
 object StringServicesModule {
+
   trait StringProvider[R] {
     def get: RIO[R, String] // R=Any
   }
@@ -28,6 +29,7 @@ trait RemoteStringServicesModule extends StringServicesModule {
   val client: Client[Task]
 
   override val simple = new StringServicesModule.StringProvider[Any] {
+
     override def get: UIO[String] = // R=Any
       client
         .expect[Joke](uri"https://icanhazdadjoke.com/")
