@@ -37,6 +37,7 @@ object ComplexApp extends App {
             new Clock with RemoteQuoter { // Provide the Quoter to remove it from R
               override val client: Client[Task] = CLogger(logHeaders = true, logBody = false)(cc)
               override val clock: Clock.Service[Any] = currentEnv.clock
+              override val config: ApplicationConf = conf
             }
           }
         }

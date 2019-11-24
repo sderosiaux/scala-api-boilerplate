@@ -24,3 +24,5 @@ object HelloSpec
         }
       )
     )
+
+// test avec un TestQuoter
