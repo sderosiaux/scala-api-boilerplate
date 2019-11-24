@@ -2,13 +2,12 @@
 
 # What
 
-The API is using `.env` to read and set environment variables (dev mode).
-
 ```
 > ~reStart
 ```
 
-Use SwaggerUI available at: http://localhost:8000/index.html?url=/openapi.yaml
+- Use SwaggerUI available at: http://localhost:8000/index.html?url=/openapi.yaml
+- Use `application.conf` and `.env` for configuration
 
 # To be done
 

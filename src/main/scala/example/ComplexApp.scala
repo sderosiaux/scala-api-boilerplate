@@ -25,7 +25,7 @@ object ComplexApp extends App {
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, Int] =
     (for {
-      conf <- ZIO.effect(ApplicationConf.build().orThrow())
+      conf <- ApplicationConf.build()
       _ <- putStrLn(conf.toString)
       blockingEC <- blocking.blockingExecutor.map(_.asEC)
       server = ZIO.runtime[Clock with QuoterService].flatMap { implicit rts =>
@@ -68,7 +68,7 @@ object ComplexApp extends App {
       CORS(Logger.httpApp(logHeaders = true, logBody = true)(httpApp))
 
     BlazeServerBuilder[RIO[R, *]] // ConcurrentEffect (from ZIO Runtime) + Timer (from ZIO Clock)
-      .bindHttp(conf.port.port.value, conf.server.value)
+      .bindHttp(conf.port.port.value, conf.address.value)
       .withHttpApp(httpAppExtended)
       .withoutBanner
       .withSocketKeepAlive(true)
