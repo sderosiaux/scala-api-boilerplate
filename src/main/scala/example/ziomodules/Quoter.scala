@@ -3,7 +3,7 @@ package example.ziomodules
 import zio.ZIO
 import zio.macros.annotation.accessible
 
-@accessible
+@accessible(">")
 trait Quoter {
   val quoter: Quoter.Service[Any]
 }

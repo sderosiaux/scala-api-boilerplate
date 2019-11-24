@@ -19,6 +19,6 @@ class ExternalApiRoutes[R <: Quoter] {
   val route: HttpRoutes[RIO[R, *]] =
     jokeEndpoint.toRoutes { _ =>
       ZIO.accessM[Quoter](_.quoter.quote()).map(_.asRight[Unit])
-    //Quoter.>.get().map(_.asRight[Unit])
+    // Quoter.>.get().map(_.asRight[Unit])
     }
 }

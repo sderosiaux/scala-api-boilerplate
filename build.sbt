@@ -63,7 +63,7 @@ lazy val root = (project in file("."))
 scalacOptions --= Seq("-Xfatal-warnings")
 scalacOptions += "-Ymacro-annotations"
 
-Compile / run / mainClass := Some("example.HttpApp")
+Compile / run / mainClass := Some("example.ComplexApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
 testOptions in Test += Tests.Argument("-oDF")
 

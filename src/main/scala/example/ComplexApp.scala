@@ -20,10 +20,10 @@ import zio.{ App, RIO, ZIO, _ }
 
 import scala.concurrent.ExecutionContext
 
-object HttpApp extends App {
+object ComplexApp extends App {
   type AppEnvironment = Clock with Blocking with Quoter
 
-  override def run(args: List[String]) =
+  override def run(args: List[String]): ZIO[ZEnv, Nothing, Int] =
     (for {
       conf <- ZIO.effect(ApplicationConf.build().orThrow())
       _ <- putStrLn(conf.toString)
@@ -31,7 +31,7 @@ object HttpApp extends App {
       server = ZIO.runtime[Clock with Quoter].flatMap { implicit rts =>
         runHttpServer(conf)
       }
-      client <- ZIO.runtime[Any].flatMap { implicit rts =>
+      _ <- ZIO.runtime[Any].flatMap { implicit rts =>
         makeClient(blockingEC).use { cc =>
           server.provideSome { currentEnv: Clock =>
             new Clock with RemoteQuoter { // Provide the Quoter to remove it from R
@@ -41,7 +41,7 @@ object HttpApp extends App {
           }
         }
       }
-    } yield server).foldM(h => putStrLn(h.toString).as(1), _ => ZIO.succeed(0))
+    } yield 0).foldM(h => putStrLn(h.toString).as(1), _ => ZIO.succeed(0))
 
   // Build a Managed Client to make REST calls
   // @R: independent
