@@ -1,4 +1,4 @@
-# scala-tapir-http4s-zio [![Build Status](https://travis-ci.org/sderosiaux/scala-tapir-http4s-zio.svg?branch=master)](https://travis-ci.org/sderosiaux/scala-tapir-http4s-zio)
+# scala-api-boilerplate [![Build Status](https://travis-ci.org/sderosiaux/scala-api-boilerplate.svg?branch=master)](https://travis-ci.org/sderosiaux/scala-api-boilerplate)
 
 # What
 
