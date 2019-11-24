@@ -32,9 +32,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "App",
     libraryDependencies ++= Seq(
-      scalaTest                             % Test,
-      "dev.zio" %% "zio"                    % ZioVersion,
-      "dev.zio" %% "zio-interop-cats"       % ZioCatsVersion,
+      scalaTest                       % Test,
+      "dev.zio" %% "zio"              % ZioVersion,
+      "dev.zio" %% "zio-interop-cats" % ZioCatsVersion,
+      "dev.zio" %% "zio-macros-core"  % "0.5.0",
       //"dev.zio" %% "zio-logging"            % ZioVersion,
       "org.http4s" %% "http4s-core"         % Http4sVersion,
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
@@ -60,11 +61,13 @@ lazy val root = (project in file("."))
   )
 
 scalacOptions --= Seq("-Xfatal-warnings")
+scalacOptions += "-Ymacro-annotations"
+
 Compile / run / mainClass := Some("example.HttpApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
 testOptions in Test += Tests.Argument("-oDF")
 
-addCompilerPlugin("org.typelevel" %% "kind-projector"  % "0.11.0" cross CrossVersion.full)
+addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.11.0").cross(CrossVersion.full))
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0")
 
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
