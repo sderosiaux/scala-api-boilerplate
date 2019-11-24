@@ -1,34 +1,26 @@
 package example
 
-import cats.effect.Sync
+import example.Generators.nonEmptyStrings
+import example.HttpHelpers.assertReqRes
 import example.route.ApiRoutes
-import zio.{ RIO, Task, UIO, ZIO }
-import zio.interop.catz._
-import zio.interop.catz.core._
-import zio.test._
-import zio.test.Assertion._
 import org.http4s._
-
-object HttpHelpers {
-  def req[F[_]](path: String): Request[F] = Request[F](Method.GET, Uri.unsafeFromString(path))
-}
+import zio.interop.catz._
+import zio.test._
 
 object HelloSpec
     extends DefaultRunnableSpec(
-      suite("Hello")(
-        testM("should work") {
-          import org.http4s.implicits._
-          val req: Request[Task] = HttpHelpers.req[Task]("/hello/john")
-          val x = new ApiRoutes[Any]().getRoutes.head.orNotFound
-          val res: RIO[Any, Response[Task]] = x.run(req)
-
-          res.flatMap { res =>
-            val ress = res.as[String]
-            assertM(ress, equalTo("Hello, john!"))
+      suite("The API")(
+        testM("should hello anyone") {
+          val x = new ApiRoutes[Any]().getRoutes.head
+          checkM(nonEmptyStrings) { s =>
+            assertReqRes(x, s"/hello/$s", s"Hello, $s!", Status.Ok)
           }
         },
-        testM("should work") {
-          UIO.effectTotal(assert("hello", equalTo("hello")))
+        testM("should fail on bye") {
+          val x = new ApiRoutes[Any]().getRoutes.tail.head
+          checkM(nonEmptyStrings) { s =>
+            assertReqRes(x, s"/bye/$s", s"Bye, $s!", Status.InternalServerError)
+          }
         }
       )
     )
