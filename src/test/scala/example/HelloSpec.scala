@@ -1,9 +1,14 @@
 package example
 
-import org.scalatest._
+import zio.UIO
+import zio.test._
+import zio.test.Assertion._
 
-class HelloSpec extends FlatSpec with Matchers {
-//  "The Hello object" should "say hello" in {
-//    Hello.greeting shouldEqual "hello"
-//  }
-}
+object HelloSpec
+    extends DefaultRunnableSpec(
+      suite("Hello")(test("should work") {
+        assert("hello", equalTo("hello"))
+      }, testM("should work") {
+        UIO.effectTotal(assert("hello", equalTo("hello")))
+      })
+    )

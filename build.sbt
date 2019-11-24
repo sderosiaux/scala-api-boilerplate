@@ -35,6 +35,8 @@ lazy val root = (project in file("."))
       scalaTest                       % Test,
       "dev.zio" %% "zio"              % ZioVersion,
       "dev.zio" %% "zio-interop-cats" % ZioCatsVersion,
+      "dev.zio" %% "zio-test"         % ZioVersion % Test,
+      "dev.zio" %% "zio-test-sbt"     % ZioVersion % Test,
       //"dev.zio" %% "zio-macros-core"  % "0.5.0", // IntelliJ can't find the generated code -_-
       //"dev.zio" %% "zio-logging"            % ZioVersion, // Not published yet
       "org.http4s" %% "http4s-core"         % Http4sVersion,
@@ -66,6 +68,7 @@ scalacOptions --= Seq("-Xfatal-warnings")
 Compile / run / mainClass := Some("example.ComplexApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
 testOptions in Test += Tests.Argument("-oDF")
+testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
 addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.11.0").cross(CrossVersion.full))
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0")
