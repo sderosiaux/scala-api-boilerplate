@@ -1,14 +1,14 @@
 package example.route
 
 import cats.implicits._
-import example.ziomodules.Quoter
+import example.ziomodules.QuoterService
 import org.http4s.HttpRoutes
 import tapir.server.http4s._
 import tapir.{ Endpoint, endpoint, stringBody }
-import zio.{ RIO, ZIO }
+import zio.RIO
 import zio.interop.catz._
 
-class ExternalApiRoutes[R <: Quoter] {
+class ExternalApiRoutes[R <: QuoterService] {
 
   val jokeEndpoint: Endpoint[Unit, Unit, String, Nothing] =
     endpoint.get
@@ -18,7 +18,6 @@ class ExternalApiRoutes[R <: Quoter] {
 
   val route: HttpRoutes[RIO[R, *]] =
     jokeEndpoint.toRoutes { _ =>
-      ZIO.accessM[Quoter](_.quoter.quote()).map(_.asRight[Unit])
-    // Quoter.>.get().map(_.asRight[Unit])
+      QuoterService.quote().map(_.asRight[Unit])
     }
 }

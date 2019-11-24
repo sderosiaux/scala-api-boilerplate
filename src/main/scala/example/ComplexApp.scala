@@ -3,7 +3,7 @@ package example
 import cats.effect.ExitCode
 import cats.implicits._
 import example.route.{ ApiRoutes, ExternalApiRoutes, RawHttp4sRoute }
-import example.ziomodules.{ Quoter, RemoteQuoter }
+import example.ziomodules.{ QuoterService, RemoteQuoter }
 import fs2.Stream.Compiler._
 import org.http4s.HttpApp
 import org.http4s.client.Client
@@ -21,14 +21,14 @@ import zio.{ App, RIO, ZIO, _ }
 import scala.concurrent.ExecutionContext
 
 object ComplexApp extends App {
-  type AppEnvironment = Clock with Blocking with Quoter
+  type AppEnvironment = Clock with Blocking with QuoterService
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, Int] =
     (for {
       conf <- ZIO.effect(ApplicationConf.build().orThrow())
       _ <- putStrLn(conf.toString)
       blockingEC <- blocking.blockingExecutor.map(_.asEC)
-      server = ZIO.runtime[Clock with Quoter].flatMap { implicit rts =>
+      server = ZIO.runtime[Clock with QuoterService].flatMap { implicit rts =>
         runHttpServer(conf)
       }
       _ <- ZIO.runtime[Any].flatMap { implicit rts =>
@@ -52,7 +52,7 @@ object ComplexApp extends App {
 
   // Start an HTTP Server
   // @R: Clock to run effects & Quoter for routes
-  private def runHttpServer[R <: Clock with Quoter](
+  private def runHttpServer[R <: Clock with QuoterService](
     conf: ApplicationConf
   )(implicit rts: Runtime[R]): ZIO[R, Throwable, Unit] = {
     val apiRoutes = new ApiRoutes[R]()

@@ -35,8 +35,8 @@ lazy val root = (project in file("."))
       scalaTest                       % Test,
       "dev.zio" %% "zio"              % ZioVersion,
       "dev.zio" %% "zio-interop-cats" % ZioCatsVersion,
-      "dev.zio" %% "zio-macros-core"  % "0.5.0",
-      //"dev.zio" %% "zio-logging"            % ZioVersion,
+      //"dev.zio" %% "zio-macros-core"  % "0.5.0", // IntelliJ can't find the generated code -_-
+      //"dev.zio" %% "zio-logging"            % ZioVersion, // Not published yet
       "org.http4s" %% "http4s-core"         % Http4sVersion,
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
       "org.http4s" %% "http4s-blaze-client" % Http4sVersion,
@@ -61,7 +61,7 @@ lazy val root = (project in file("."))
   )
 
 scalacOptions --= Seq("-Xfatal-warnings")
-scalacOptions += "-Ymacro-annotations"
+//scalacOptions ++= Seq("-Ymacro-annotations", "-Vmacro-lite")
 
 Compile / run / mainClass := Some("example.ComplexApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
