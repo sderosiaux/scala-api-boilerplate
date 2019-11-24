@@ -9,6 +9,7 @@ import zio.interop.catz._
 import zio.test._
 import io.circe.literal._
 import zio.ZIO
+import org.http4s.circe._
 
 object HelloSpec
     extends DefaultRunnableSpec(
@@ -30,7 +31,7 @@ object HelloSpec
           val qs = new QuoterService {
             override val quoterService: QuoterService.Service[Any] = () => ZIO.succeed("lol")
           }
-          assertReqRes(x, "/joke", """{"joke":"lol"}""", Status.InternalServerError).provide(qs)
+          assertReqRes(x, "/joke", json"""{ "joke": "lol" }""", Status.InternalServerError).provide(qs)
         }
       )
     )
