@@ -30,7 +30,7 @@ parallelExecution in Test := true
 
 lazy val root = (project in file("."))
   .settings(
-    name := "App",
+    name := "Scala API Boilerplate",
     libraryDependencies ++= Seq(
       scalaTest                       % Test,
       "dev.zio" %% "zio"              % ZioVersion,
@@ -55,12 +55,13 @@ lazy val root = (project in file("."))
       "com.softwaremill.tapir" %% "tapir-openapi-docs"       % TapirVersion,
       "com.softwaremill.tapir" %% "tapir-openapi-circe-yaml" % TapirVersion,
       "com.softwaremill.tapir" %% "tapir-json-circe"         % TapirVersion,
-      "org.webjars"                                          % "swagger-ui" % "3.24.3"
+      "org.webjars"                                          % "swagger-ui" % "3.24.3",
+      "io.estatico" %% "newtype"                             % "0.4.3"
     )
   )
 
 scalacOptions --= Seq("-Xfatal-warnings")
-//scalacOptions ++= Seq("-Ymacro-annotations", "-Vmacro-lite")
+scalacOptions ++= Seq("-Ymacro-annotations") // , "-Vmacro-lite")
 
 Compile / run / mainClass := Some("example.ComplexApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
