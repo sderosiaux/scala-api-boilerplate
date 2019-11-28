@@ -1,6 +1,6 @@
 package example.ziomodules
 
-import example.model.Joke._
+import example.model.joke.joke._
 import example.{ ApplicationConf, ziomodules }
 import org.http4s.client.Client
 import zio.interop.catz._

@@ -1,36 +1,43 @@
 import Dependencies._
+import sbt.Keys.{ resolvers, scalacOptions }
+import sbt.Test
 
 val gitOwner = "sderosiaux"
 val gitRepo = "repo"
 
-scalaVersion     := "2.13.1"
-version          := "0.1.0"
-organization     := "com.example"
-organizationName := "example"
-startYear        := Some(2019)
-licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
-homepage := Some(url(s"https://github.com/$gitOwner/$gitRepo"))
-scmInfo  := Some(ScmInfo(url(s"https://github.com/$gitOwner/$gitRepo"), s"git@github.com:$gitOwner/$gitRepo.git"))
-developers += Developer(
-  "sderosiaux",
-  "Stéphane Derosiaux",
-  s"stephane@ixonad.com",
-  url(s"https://sderosiaux.com")
+lazy val commonSettings = Seq(
+  scalaVersion     := "2.13.1",
+  version          := "0.1.0",
+  organization     := "com.example",
+  organizationName := "example",
+  startYear        := Some(2019),
+  licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+  homepage := Some(url(s"https://github.com/$gitOwner/$gitRepo")),
+  scmInfo  := Some(ScmInfo(url(s"https://github.com/$gitOwner/$gitRepo"), s"git@github.com:$gitOwner/$gitRepo.git")),
+  developers += Developer(
+    "sderosiaux",
+    "Stéphane Derosiaux",
+    s"stephane@ixonad.com",
+    url(s"https://sderosiaux.com")
+  ),
+  scalafmtOnCompile        := true,
+  Test / fork              := true,
+  Test / parallelExecution := true,
+  resolvers += Resolver.sonatypeRepo("releases"),
+  resolvers += Resolver.sonatypeRepo("snapshots"),
+  resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(
+    Resolver.ivyStylePatterns
+  ),
+  scalacOptions --= Seq("-Xfatal-warnings"),
+  scalacOptions ++= Seq("-Ymacro-annotations") // , "-Vmacro-lite")
 )
 
-resolvers += Resolver.sonatypeRepo("releases")
-resolvers += Resolver.sonatypeRepo("snapshots")
-resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(
-  Resolver.ivyStylePatterns
-)
-
-scalafmtOnCompile         := true
-fork in Test              := true
-parallelExecution in Test := true
-
-lazy val root = (project in file("."))
+lazy val root = project
+  .in(file("."))
+  .settings(commonSettings)
   .settings(
     name := "Scala API Boilerplate",
+    // publish / skip     := true // when fully modularized
     libraryDependencies ++= Seq(
       scalaTest                       % Test,
       "dev.zio" %% "zio"              % ZioVersion,
@@ -55,13 +62,24 @@ lazy val root = (project in file("."))
       "com.softwaremill.tapir" %% "tapir-openapi-docs"       % TapirVersion,
       "com.softwaremill.tapir" %% "tapir-openapi-circe-yaml" % TapirVersion,
       "com.softwaremill.tapir" %% "tapir-json-circe"         % TapirVersion,
-      "org.webjars"                                          % "swagger-ui" % "3.24.3",
-      "io.estatico" %% "newtype"                             % "0.4.3"
+      "org.webjars"                                          % "swagger-ui" % "3.24.3"
     )
   )
+  .aggregate(model)
+  .dependsOn(model)
 
-scalacOptions --= Seq("-Xfatal-warnings")
-scalacOptions ++= Seq("-Ymacro-annotations") // , "-Vmacro-lite")
+lazy val model = project
+  .in(file("modules/model"))
+  .settings(commonSettings)
+  .settings(
+    name        := "Models",
+    description := "The domain classes of the project",
+    libraryDependencies ++= Seq(
+      "io.circe" %% "circe-generic" % CirceVersion,
+      "io.estatico" %% "newtype"    % "0.4.3",
+      "io.circe" %% "circe-literal" % CirceVersion
+    )
+  )
 
 Compile / run / mainClass := Some("example.ComplexApp")
 watchTriggeredMessage     := Watch.clearScreenOnTrigger
