@@ -82,9 +82,12 @@ lazy val model = project
   )
 
 Compile / run / mainClass := Some("example.ComplexApp")
-watchTriggeredMessage     := Watch.clearScreenOnTrigger
-testOptions in Test += Tests.Argument("-oDF")
-testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
+
+ThisBuild / useSuperShell         := false
+ThisBuild / turbo                 := true
+ThisBuild / watchTriggeredMessage := Watch.clearScreenOnTrigger
+ThisBuild / testOptions in Test += Tests.Argument("-oDF")
+ThisBuild / testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 
 addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.11.0").cross(CrossVersion.full))
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0")
