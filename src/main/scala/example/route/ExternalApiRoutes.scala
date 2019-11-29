@@ -10,7 +10,7 @@ import tapir.server.http4s._
 import tapir.{ Endpoint, endpoint, statusMapping, stringBody, _ }
 import zio.RIO
 import zio.interop.catz._
-case class JokeFailure(joke: String)
+final case class JokeFailure(joke: String)
 
 class ExternalApiRoutes[R <: QuoterService] {
 

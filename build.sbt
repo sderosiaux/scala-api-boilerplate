@@ -28,6 +28,23 @@ lazy val commonSettings = Seq(
   resolvers += Resolver.url("typesafe", url("https://repo.typesafe.com/typesafe/ivy-releases/"))(
     Resolver.ivyStylePatterns
   ),
+  Compile / compile / wartremoverErrors ++= Warts.all.filterNot(
+    Set(
+      Wart.ExplicitImplicitTypes, // issues with @newtype
+      Wart.ImplicitConversion, // issues with @newtype
+      Wart.ImplicitParameter, // issues with @newtype
+      Wart.PublicInference, // issues with @newtype
+      Wart.Nothing, // ZIO
+//    Wart.Overloading,
+      Wart.Any, // ZIO
+//    Wart.Equals, // keep, easier that way
+      Wart.ToString, // keep, easier that way
+//    Wart.Product, // keep, false positives all around
+      Wart.JavaSerializable, // ZIO
+      Wart.Serializable // ZIO
+//    Wart.DefaultArguments // for constructors for PureConfig
+    )
+  ),
   scalacOptions --= Seq("-Xfatal-warnings"),
   scalacOptions ++= Seq("-Ymacro-annotations") // , "-Vmacro-lite")
 )
