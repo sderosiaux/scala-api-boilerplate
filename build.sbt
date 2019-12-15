@@ -7,6 +7,7 @@ val gitRepo = "repo"
 
 lazy val commonSettings = Seq(
   scalaVersion     := "2.13.1",
+  javacOptions     ++= Seq("-source", "11")
   version          := "0.1.0",
   organization     := "com.example",
   organizationName := "example",
