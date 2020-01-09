@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 11 ] # , 12, 13 ]
+        java: [ 11, 12, 13 ]
       
     steps:       
       - uses: actions/checkout@v1
@@ -22,32 +22,9 @@ jobs:
           java-version: ${{ matrix.java }}
           fetch-depth: 1
 
+
       - name: Run tests
-        run: sbt test
-
-  no-container:
-    runs-on: [ubuntu-latest]
-    services:
-      nginx:
-        image: nginx
-        ports:
-          - 80
-        env:
-          NGINX_PORT: 80         
-    steps:
-     - run: wget -O- http://localhost:${{ job.services.nginx.ports['80'] }}
-
-  with-container:
-    runs-on: [ubuntu-latest]
-    container: busybox
-    services:
-      nginx:
-        image: nginx
-        ports:
-          - 80
-        env:
-          NGINX_PORT: 80         
-    steps:
-     - run: wget -O- http://nginx:80
-
+        run: |
+          sbt -V
+          sbt test
 
