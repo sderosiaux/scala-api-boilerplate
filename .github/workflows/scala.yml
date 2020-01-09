@@ -60,7 +60,7 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: GitHub CI
-          text: You rock!
+          text: Build for Java ${{ matrix.java }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
