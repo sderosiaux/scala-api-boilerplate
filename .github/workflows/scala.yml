@@ -36,9 +36,9 @@ jobs:
           NGINX_PORT: 80         
     steps:
      - run: uname -r
-     - run: wget -O- http://nginx:${{ services.nginx.ports['80'] }}
+     - run: wget -O- http://nginx:${{ job.services.nginx.ports['80'] }}
        continue-on-error: true       
-     - run: wget -O- http://localhost:${{ services.nginx.ports['80'] }}
+     - run: wget -O- http://localhost:${{ job.services.nginx.ports['80'] }}
        continue-on-error: true
 
   with-container:
@@ -53,9 +53,9 @@ jobs:
           NGINX_PORT: 80         
     steps:
      - run: uname -r
-     - run: wget -O- http://nginx:${{ services.nginx.ports['80'] }}
+     - run: wget -O- http://nginx:${{ job.services.nginx.ports['80'] }}
        continue-on-error: true       
-     - run: wget -O- http://localhost:${{ services.nginx.ports['80'] }}
+     - run: wget -O- http://localhost:${{ job.services.nginx.ports['80'] }}
        continue-on-error: true
 
 
