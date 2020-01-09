@@ -23,7 +23,6 @@ jobs:
           fetch-depth: 1
 
       - name: Run tests
-        run: >
-          sbt -V &&
-          sbt test
+        run: |
+          sbt -V
 
