@@ -1,0 +1,25 @@
+name: Scala CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 11, 12, 13 ]
+      
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        max-depth: 1
+
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        fetch-depth: ${{ matrix.java }}
+    
+    - name: Run tests
+      run: sbt test
