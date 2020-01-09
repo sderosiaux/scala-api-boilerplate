@@ -6,8 +6,8 @@ val gitOwner = "sderosiaux"
 val gitRepo = "repo"
 
 lazy val commonSettings = Seq(
-  scalaVersion     := "2.13.1",
-  javacOptions     ++= Seq("-source", "11"),
+  scalaVersion := "2.13.1",
+  javacOptions ++= Seq("-source", "11"),
   version          := "0.1.0",
   organization     := "com.example",
   organizationName := "example",
@@ -21,10 +21,10 @@ lazy val commonSettings = Seq(
     s"stephane@ixonad.com",
     url(s"https://sderosiaux.com")
   ),
-  scalafmtOnCompile        := true,
-  Test / fork              := true,
-  Test / parallelExecution := true,
-  sources in (Compile, doc) := Seq.empty, // no java|scaladoc
+  scalafmtOnCompile                        := true,
+  Test / fork                              := true,
+  Test / parallelExecution                 := true,
+  sources in (Compile, doc)                := Seq.empty, // no java|scaladoc
   publishArtifact in (Compile, packageDoc) := false,
   resolvers += Resolver.sonatypeRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots"),
