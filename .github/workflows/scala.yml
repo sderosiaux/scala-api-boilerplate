@@ -20,12 +20,35 @@ jobs:
         with:
           java-version: adopt@1.${{ matrix.java }}
 
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: ${{ matrix.java }}
+      - name: Cache .sbt
+        uses: actions/cache@v1
+        with:
+          path:  ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/*.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-sbt
 
-      - name: Run tests
-        run: |
-          sbt sbtVersion
-          sbt test
+      - name: Cache .ivy2
+        uses: actions/cache@v1
+        with:
+          path:  ~/.ivy2
+          key: ${{ runner.os }}-ivy2-${{ hashFiles('**/*.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-ivy2
+
+      - name: Cache .coursier
+        uses: actions/cache@v1
+        with:
+          path:  ~/.coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('**/*.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-coursier
+
+      - name: "Code style check"
+        run: sbt scalafmtCheck || { echo "[error] Unformatted code found. Please run 'Test/compile' and commit the reformatted code."; false; }
+        
+      - name: "Build code style check"
+        run: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
+        
+      - name: "Run all tests"
+        run: sbt -Dfile.encoding=UTF8 -J-XX:ReservedCodeCacheSize=256M ++2.13.1 clean test
