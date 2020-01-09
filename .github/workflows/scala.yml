@@ -19,7 +19,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        fetch-depth: ${{ matrix.java }}
+        java-version: ${{ matrix.java }}
+        fetch-depth: 1
     
     - name: Run tests
       run: sbt test
