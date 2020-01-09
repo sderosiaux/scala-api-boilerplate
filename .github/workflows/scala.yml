@@ -25,6 +25,8 @@ jobs:
 #        with:
 #          java-version: ${{ matrix.java }}
 
+      - run: which sbt
+      - run: cat $(which sbt)
       - name: Run tests
         run: sbt -d -V
 
