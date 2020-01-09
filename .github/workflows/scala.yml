@@ -26,7 +26,7 @@ jobs:
 #          java-version: ${{ matrix.java }}
 
       - name: Run tests
-        run: |
-          sbt -V
+        run: >
+          sbt -V &&
           sbt test
 
