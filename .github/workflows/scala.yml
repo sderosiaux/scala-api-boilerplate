@@ -46,9 +46,11 @@ jobs:
 
       - name: "Code style check"
         run: sbt scalafmtCheck || { echo "[error] Unformatted code found. Please run 'Test/compile' and commit the reformatted code."; false; }
-        
+        continue-on-error: true
+
       - name: "Build code style check"
         run: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
-        
+        continue-on-error: true
+
       - name: "Run all tests"
         run: sbt -Dfile.encoding=UTF8 -J-XX:ReservedCodeCacheSize=256M ++2.13.1 clean test
