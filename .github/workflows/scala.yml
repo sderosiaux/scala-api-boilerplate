@@ -22,9 +22,8 @@ jobs:
           java-version: ${{ matrix.java }}
           fetch-depth: 1
 
-
       - name: Run tests
-        run: |
-          sbt -V
+        run: >
+          sbt -V &&
           sbt test
 
